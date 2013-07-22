@@ -48,7 +48,7 @@ public class RouteTest {
     public void it_parses_a_list_of_routes() throws IOException {
         Route r1 = new Route("host1", 9004, new String[]{"uri1"});
         Route r2 = new Route("host2", 9220, new String[]{"uri2", "uri3"});
-        List<Route> expectedRoutes = new ArrayList<>();
+        List<Route> expectedRoutes = new ArrayList<Route>();
         expectedRoutes.add(r1);
         expectedRoutes.add(r2);
 

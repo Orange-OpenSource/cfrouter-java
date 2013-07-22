@@ -1,11 +1,33 @@
 package cfrouter.client;
 
-import cfrouter.client.impl.RecordingMessageHandler;
-import cfrouter.client.impl.RouterImpl;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import nats.client.Message;
 import nats.client.Nats;
 import nats.client.NatsConnector;
 import nats.client.Subscription;
+
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -20,7 +42,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
-import org.fest.assertions.Assertions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -28,22 +49,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import cfrouter.client.impl.RecordingMessageHandler;
+import cfrouter.client.impl.RouterImpl;
 
 /**
  *
@@ -140,13 +147,6 @@ public class RouterTest {
         }
         List<Route> activeRoutes = router.getActiveRoutes();
         assertTrue("expected to find updated routes ", activeRoutes.containsAll(routes));
-    }
-
-    @Test
-    public void it_lists_active_routes() throws IOException, InterruptedException {
-        List<Route> activeRoutes = router.getActiveRoutes();
-
-        Assertions.assertThat(activeRoutes).isNotEmpty();
     }
 
     @Test
