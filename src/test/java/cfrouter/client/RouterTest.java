@@ -92,7 +92,7 @@ public class RouterTest {
         registerToNatsMsgs();
 
         Route r1 = new Route("host1", 80, new String[]{System.currentTimeMillis() + "-ut-random."+ROUTER_HOST});
-        Route r2 = new Route("host2", 80, r1.getUris());
+        Route r2 = new Route("host2", 80, r1.getVirtualHosts());
         Route r3 = new Route("host2", 8080, new String[]{"xaas-engine-fut." +ROUTER_HOST});
         routes = asList(r1, r2, r3);
     }
@@ -256,12 +256,12 @@ public class RouterTest {
     }
 
     @Test
-    public void router_provides_host_header_of_routed_uri_to_origin_server_when_directly_contacted() throws Exception {
-        assert_router_provides_host_header_of_routed_uri_to_origin_server(new DefaultHttpClientConfig());
+    public void router_provides_host_header_of_routed_vhost_to_origin_server_when_directly_contacted() throws Exception {
+        assert_router_provides_host_header_of_routed_vhost_to_origin_server(new DefaultHttpClientConfig());
     }
 
     @Test
-    public void router_provides_host_header_of_routed_uri_to_origin_server_when_reached_as_proxy() throws Exception {
+    public void router_provides_host_header_of_routed_vhost_to_origin_server_when_reached_as_proxy() throws Exception {
         final String routerProxyHost = "proxy." + ROUTER_HOST;
 
         //The default way to assign the proxy
@@ -272,12 +272,12 @@ public class RouterTest {
                 httpclient.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY, proxy);
             }
         };
-        assert_router_provides_host_header_of_routed_uri_to_origin_server(defaultProxyConfig);
+        assert_router_provides_host_header_of_routed_vhost_to_origin_server(defaultProxyConfig);
     }
 
    @Test
    @Ignore("http client does not yet support proxy chains that would enable clean sneaking into the http traffic")
-    public void router_provides_host_header_of_routed_uri_to_origin_server_when_reached_as_proxy_spied_in_between() throws Exception {
+    public void router_provides_host_header_of_routed_vhost_to_origin_server_when_reached_as_proxy_spied_in_between() throws Exception {
         final String routerProxyHost = "proxy." + ROUTER_HOST;
 
         //Multiple ways to configure HttpClient to use a proxy: http://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html#d5e571
@@ -303,11 +303,11 @@ public class RouterTest {
                 });
             }
         };
-        assert_router_provides_host_header_of_routed_uri_to_origin_server(explicitHttpClientRouteConfig);
+        assert_router_provides_host_header_of_routed_vhost_to_origin_server(explicitHttpClientRouteConfig);
     }
 
 
-    private void assert_router_provides_host_header_of_routed_uri_to_origin_server(HttpClientConfig httpClientConfig) throws Exception {
+    private void assert_router_provides_host_header_of_routed_vhost_to_origin_server(HttpClientConfig httpClientConfig) throws Exception {
         int port = getNextAvailablePort(9000);
         Server server = startJettyServer(port, new EchosHostServletHandler());
 

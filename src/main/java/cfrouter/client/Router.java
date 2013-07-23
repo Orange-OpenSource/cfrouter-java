@@ -15,22 +15,22 @@ public interface Router {
     void registerRouterStartMsgHandler(RouterStartHandler handler);
 
     /**
-     * register new routes. If a given URI is already registered by an existing route, then traffic on this URI
+     * register new routes. If a given vHost is already registered by an existing route, then traffic on this vHost
      * will be load balanced among the hosts of previous and new routes.
      * @param routes
      */
     void addRoutes(List<Route> routes);
 
     /**
-     * register new routes or override existing ones. If uri in requested routes is already covered by one route r1,
+     * register new routes or override existing ones. If vHost in requested routes is already covered by one route r1,
      * then r1 will be unregistered
      * @param routes
      */
     void replaceRoutes(List<Route> routes) throws IOException, InterruptedException;
 
     /**
-     * Unregister the specified route (i.e. exact combination of URI and host/port. If there are other registered host/port
-     * for the URI, they would remain until their expire)
+     * Unregister the specified route (i.e. exact combination of vHost and host/port. If there are other registered host/port
+     * for the vHost, they would remain until their expire)
      * @param routes
      */
     void removeRoutes(List<Route> routes);
@@ -45,7 +45,7 @@ public interface Router {
 
     /**
      * Peeks the active routes from the first router that respond.
-     * @return a list of active routes. Notes that URI are normalized to use lower case
+     * @return a list of active routes. Notes that vHosts are normalized to use lower case
      */
     List<Route> getActiveRoutes() throws IOException, InterruptedException;
 }

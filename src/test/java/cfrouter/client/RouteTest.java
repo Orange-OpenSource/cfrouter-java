@@ -1,14 +1,15 @@
 package cfrouter.client;
 
-import cfrouter.client.impl.PojoMapper;
-import org.junit.Test;
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.fest.assertions.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
+import org.junit.Test;
+
+import cfrouter.client.impl.PojoMapper;
 
 /**
  *
@@ -17,8 +18,8 @@ public class RouteTest {
 
     @Test
     public void it_formats_as_json_output_and_parses_back_as_pojo() throws IOException {
-        String[] uris = {"my_first_url.vcap.me", "my_second_url.vcap.me"};
-        Route r = new Route("127.0.0.1", 4567, uris);
+        String[] vHosts = {"my_first_url.vcap.me", "my_second_url.vcap.me"};
+        Route r = new Route("127.0.0.1", 4567, vHosts);
 
         String json = r.toJson();
         assertEquals("{\"host\":\"127.0.0.1\",\"port\":4567,\"uris\":[\"my_first_url.vcap.me\",\"my_second_url.vcap.me\"]}", json);
@@ -46,8 +47,8 @@ public class RouteTest {
 
     @Test
     public void it_parses_a_list_of_routes() throws IOException {
-        Route r1 = new Route("host1", 9004, new String[]{"uri1"});
-        Route r2 = new Route("host2", 9220, new String[]{"uri2", "uri3"});
+		Route r1 = new Route("host1", 9004, new String[] { "vhost1" });
+		Route r2 = new Route("host2", 9220, new String[] { "vhost2", "vhost3" });
         List<Route> expectedRoutes = new ArrayList<Route>();
         expectedRoutes.add(r1);
         expectedRoutes.add(r2);

@@ -11,8 +11,6 @@
 
 - fix erratic medium/integration tests that break on slow gorouter route registration
 
-- rename uri into "virtualhost" in Route object and upwards
-
 - add support for nats authentication. Not clear natsj supports it.
 
 - test the CONNECT method when supported in router

@@ -1,10 +1,12 @@
 package cfrouter.client;
 
-import cfrouter.client.impl.PojoMapper;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
+import cfrouter.client.impl.PojoMapper;
 
 /**
  * Describes a route to be programmed by the HTTP Router
@@ -14,7 +16,9 @@ public class Route {
 
     private String host;
     private int port;
-    private String [] uris;
+
+	@JsonProperty("uris")
+    private String [] virtualHosts;
     //tags ommited for now
     //private Id ommited for now
 
@@ -22,12 +26,12 @@ public class Route {
      *
      * @param host the host that will be routed HTTP request tos
      * @param port the port that will be routed HTTP request tos
-     * @param uris the uris (really DNS hostnames or virtual host) that will be routed to the host/port e.g. "app1.myrouter.mydomain.com"
+     * @param virtualHosts the uris (really DNS hostnames or virtual host) that will be routed to the host/port e.g. "app1.myrouter.mydomain.com"
      */
-    public Route(String host, int port, String[] uris) {
+    public Route(String host, int port, String[] virtualHosts) {
         this.host = host;
         this.port = port;
-        this.uris = uris;
+        this.virtualHosts = virtualHosts;
     }
 
     public Route() {
@@ -36,9 +40,9 @@ public class Route {
     public Route(Route route) {
         this.host = route.getHost();
         this.port = route.getPort();
-        int length = route.getUris().length;
-        this.uris =  new String [length];
-        System.arraycopy(route.getUris(), 0, this.uris, 0, length);
+        int length = route.getVirtualHosts().length;
+        this.virtualHosts =  new String [length];
+        System.arraycopy(route.getVirtualHosts(), 0, this.virtualHosts, 0, length);
 
     }
 
@@ -50,8 +54,8 @@ public class Route {
         return port;
     }
 
-    public String[] getUris() {
-        return uris;
+    public String[] getVirtualHosts() {
+        return virtualHosts;
     }
 
     public void setHost(String host) {
@@ -62,8 +66,8 @@ public class Route {
         this.port = port;
     }
 
-    public void setUris(String[] uris) {
-        this.uris = uris;
+    public void setVirtualHosts(String[] virtualHosts) {
+        this.virtualHosts = virtualHosts;
     }
 
     public String toJson() {

@@ -1,11 +1,21 @@
 package cfrouter.client.impl;
 
-import cfrouter.client.*;
-import com.google.common.net.HostAndPort;
+import static java.util.Arrays.asList;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+
 import nats.client.Message;
 import nats.client.MessageHandler;
 import nats.client.Nats;
 import nats.client.Subscription;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -21,12 +31,12 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
+import cfrouter.client.Route;
+import cfrouter.client.Router;
+import cfrouter.client.RouterMetrics;
+import cfrouter.client.RouterStartHandler;
 
-import static java.util.Arrays.asList;
+import com.google.common.net.HostAndPort;
 
 /**
  *
@@ -68,15 +78,15 @@ public class RouterImpl implements Router {
     @Override
     public void replaceRoutes(List<Route> routes) throws IOException, InterruptedException {
         List<Route> activeRoutes = getActiveRoutes();
-        Set<String> urisToSet = new HashSet<String>();
+        Set<String> vHostsToSet = new HashSet<String>();
         for (Route route : routes) {
-            urisToSet.addAll(asList(route.getUris()));
+            vHostsToSet.addAll(asList(route.getVirtualHosts()));
         }
         Set<Route> routesToUnregister = new HashSet<Route>();
 
         for (Route activeRoute : activeRoutes) {
-            for (String activeUri : activeRoute.getUris()) {
-                if (urisToSet.contains(activeUri)) {
+            for (String activeVirtualHost : activeRoute.getVirtualHosts()) {
+                if (vHostsToSet.contains(activeVirtualHost)) {
                     routesToUnregister.add(activeRoute);
                 }
             }
@@ -154,11 +164,11 @@ public class RouterImpl implements Router {
         ObjectMapper mapper = new ObjectMapper();
         Map<String,List<String>> routes = mapper.readValue(json, Map.class);
         for (Map.Entry<String, List<String>> entry : routes.entrySet()) {
-            String uri = entry.getKey();
+            String vHost = entry.getKey();
             List<String> hostPorts = entry.getValue();
             for (String hostPort : hostPorts) {
                 HostAndPort hp = HostAndPort.fromString(hostPort).withDefaultPort(80);
-                Route r = new Route(hp.getHostText(), hp.getPort(), new String[]{uri});
+                Route r = new Route(hp.getHostText(), hp.getPort(), new String[]{vHost});
                 parsedRoutes.add(r);
             }
         }
