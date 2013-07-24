@@ -327,7 +327,7 @@ public class RouterTest {
 
             //then
             String content = fetchRoutedContentAsString(virtualHost, httpClientConfig);
-            assertEquals("Host=" + virtualHost + ":8081", content.trim());
+            assertEquals("Host=" + virtualHost + ":" + ROUTER_PORT, content.trim());
         } finally {
             router.removeRoutes(routes);
             unregisterMsgs.pollFirst(2, TimeUnit.SECONDS);//wait for the unregister message to propagate
@@ -346,7 +346,7 @@ public class RouterTest {
         DefaultHttpClient httpclient = new DefaultHttpClient();
         httpClientConfig.applyConfig(httpclient);
         try {
-            HttpGet httpget = new HttpGet("http://" + virtualHost + ":8081/path");
+            HttpGet httpget = new HttpGet("http://" + virtualHost + ":" + ROUTER_PORT + "/path");
             contentA = httpclient.execute(httpget, new BasicResponseHandler());
         } finally {
             httpclient.getConnectionManager().shutdown();
