@@ -1,8 +1,10 @@
 package cfrouter.client;
 
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import java.util.Map;
+import cfrouter.client.impl.RouterConfig;
 
 /**
  *
@@ -36,6 +38,8 @@ public class RouterMetrics {
 
     private String uptime; //"uptime": "1d:5h:27m:0s",
     private int urls; //        "urls": 4,
+
+    private RouterConfig config;
 
     public RouterMetrics() {
     }
@@ -126,5 +130,13 @@ public class RouterMetrics {
 
     public void setUrls(int urls) {
         this.urls = urls;
+    }
+
+    public RouterConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(RouterConfig config) {
+        this.config = config;
     }
 }
