@@ -25,9 +25,9 @@
     <!-- http://hc.apache.org/httpcomponents-client-ga/logging.html
         uncomment to enable http client debugging
 -->
+    <logger name="cfrouter.client" level="DEBUG"/>
     <logger name="org.apache.http" level="DEBUG"/>
     <logger name="org.apache.http.wire" level="DEBUG"/>
-
 
     <root level="INFO">
 		<appender-ref ref="stdout" />
