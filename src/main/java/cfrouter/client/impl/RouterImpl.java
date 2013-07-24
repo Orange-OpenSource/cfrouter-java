@@ -109,7 +109,9 @@ public class RouterImpl implements Router {
         nats.request("vcap.component.discover", new RecordingMessageHandler("vcap.component.discover", discoverReplyMsgs));
         Message discoverReply = discoverReplyMsgs.takeFirst();
         discoverReplyMsgs.clear();
-        return PojoMapper.fromJson(discoverReply.getBody(), RouterDiscoveryResponse.class);
+        RouterDiscoveryResponse response = PojoMapper.fromJson(discoverReply.getBody(), RouterDiscoveryResponse.class);
+        logger.debug("Router discovery response: " + response);
+        return response;
     }
 
     private BasicHttpContext workAroundApparentLackOfAuthChallengeInResponse(String host, int port) {
