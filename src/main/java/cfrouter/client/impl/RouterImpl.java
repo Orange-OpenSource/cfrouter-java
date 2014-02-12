@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
+import nats.NatsException;
+import nats.client.BlockingQueueMessageIterator;
 import nats.client.Message;
 import nats.client.MessageHandler;
 import nats.client.Nats;
@@ -106,10 +106,12 @@ public class RouterImpl implements Router {
     }
 
     private RouterDiscoveryResponse getRouterDiscoveryResponse(long timeout, TimeUnit unit) throws InterruptedException, IOException {
-        BlockingDeque<Message> discoverReplyMsgs = new LinkedBlockingDeque<Message>();
-        nats.request("vcap.component.discover", timeout, unit, new RecordingMessageHandler("vcap.component.discover", discoverReplyMsgs));
-        Message discoverReply = discoverReplyMsgs.takeFirst();
-        discoverReplyMsgs.clear();
+        BlockingQueueMessageIterator handler = new BlockingQueueMessageIterator();
+        nats.request("vcap.component.discover", "", timeout, unit, 1, handler);
+        Message discoverReply = handler.next(timeout, unit);
+        if (discoverReply == null) {
+            throw new NatsException("No response from router within " + timeout + " " + unit + ". Is it up and running ?");
+        }
         RouterDiscoveryResponse response = PojoMapper.fromJson(discoverReply.getBody(), RouterDiscoveryResponse.class);
         logger.debug("Router discovery response: " + response);
         return response;
