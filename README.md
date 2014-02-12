@@ -15,7 +15,7 @@ To use the basic client in your project, add the following to your Maven pom.xml
 <dependency>
     <groupId>com.github.gberche</groupId>
     <artifactId>gorouter-javaclient</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
