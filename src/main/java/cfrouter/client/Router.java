@@ -2,6 +2,7 @@ package cfrouter.client;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Entry point for controlling the router
@@ -26,7 +27,7 @@ public interface Router {
      * then r1 will be unregistered
      * @param routes
      */
-    void replaceRoutes(List<Route> routes) throws IOException, InterruptedException;
+    void replaceRoutes(List<Route> routes, long timeout, TimeUnit unit) throws IOException, InterruptedException;
 
     /**
      * Unregister the specified route (i.e. exact combination of vHost and host/port. If there are other registered host/port
@@ -41,11 +42,11 @@ public interface Router {
      * @throws InterruptedException
      * @throws IOException
      */
-    RouterMetrics getRouterMetrics() throws InterruptedException, IOException;
+    RouterMetrics getRouterMetrics(long timeout, TimeUnit unit) throws InterruptedException, IOException;
 
     /**
      * Peeks the active routes from the first router that respond.
      * @return a list of active routes. Notes that vHosts are normalized to use lower case
      */
-    List<Route> getActiveRoutes() throws IOException, InterruptedException;
+    List<Route> getActiveRoutes(long timeout, TimeUnit unit) throws IOException, InterruptedException;
 }

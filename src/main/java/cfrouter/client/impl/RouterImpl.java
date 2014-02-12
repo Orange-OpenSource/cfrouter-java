@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 import nats.client.Message;
 import nats.client.MessageHandler;
@@ -27,7 +28,6 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +36,7 @@ import cfrouter.client.Router;
 import cfrouter.client.RouterMetrics;
 import cfrouter.client.RouterStartHandler;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HostAndPort;
 
 /**
@@ -76,8 +77,8 @@ public class RouterImpl implements Router {
     }
 
     @Override
-    public void replaceRoutes(List<Route> routes) throws IOException, InterruptedException {
-        List<Route> activeRoutes = getActiveRoutes();
+    public void replaceRoutes(List<Route> routes, long timeout, TimeUnit unit) throws IOException, InterruptedException {
+        List<Route> activeRoutes = getActiveRoutes(timeout, unit);
         Set<String> vHostsToSet = new HashSet<String>();
         for (Route route : routes) {
             vHostsToSet.addAll(asList(route.getVirtualHosts()));
@@ -104,9 +105,9 @@ public class RouterImpl implements Router {
         }
     }
 
-    private RouterDiscoveryResponse getRouterDiscoveryResponse() throws InterruptedException, IOException {
+    private RouterDiscoveryResponse getRouterDiscoveryResponse(long timeout, TimeUnit unit) throws InterruptedException, IOException {
         BlockingDeque<Message> discoverReplyMsgs = new LinkedBlockingDeque<Message>();
-        nats.request("vcap.component.discover", new RecordingMessageHandler("vcap.component.discover", discoverReplyMsgs));
+        nats.request("vcap.component.discover", timeout, unit, new RecordingMessageHandler("vcap.component.discover", discoverReplyMsgs));
         Message discoverReply = discoverReplyMsgs.takeFirst();
         discoverReplyMsgs.clear();
         RouterDiscoveryResponse response = PojoMapper.fromJson(discoverReply.getBody(), RouterDiscoveryResponse.class);
@@ -154,8 +155,8 @@ public class RouterImpl implements Router {
     }
 
     @Override
-    public RouterMetrics getRouterMetrics() throws InterruptedException, IOException {
-        RouterDiscoveryResponse r = getRouterDiscoveryResponse();
+    public RouterMetrics getRouterMetrics(long timeout, TimeUnit unit) throws InterruptedException, IOException {
+        RouterDiscoveryResponse r = getRouterDiscoveryResponse(timeout, unit);
 
         String endPointResponse = invokeRouterEndPoint(r, VARZ_ENDPOINT);
         return PojoMapper.fromJson(endPointResponse, RouterMetrics.class);
@@ -178,8 +179,8 @@ public class RouterImpl implements Router {
     }
 
     @Override
-    public List<Route> getActiveRoutes() throws IOException, InterruptedException {
-        RouterDiscoveryResponse r = getRouterDiscoveryResponse();
+    public List<Route> getActiveRoutes(long timeout, TimeUnit unit) throws IOException, InterruptedException {
+        RouterDiscoveryResponse r = getRouterDiscoveryResponse(timeout, unit);
 
         String endPointResponse = invokeRouterEndPoint(r, ROUTES_ENDPOINT);
         List<Route> routes = parseRouteDumpIntoDtos(endPointResponse);

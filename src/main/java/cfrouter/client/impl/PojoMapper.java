@@ -4,19 +4,21 @@ package cfrouter.client.impl;
  *
  */
 
-import cfrouter.client.Route;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonGenerator;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static java.util.Arrays.asList;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import cfrouter.client.Route;
+
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PojoMapper {
 
@@ -49,7 +51,7 @@ public class PojoMapper {
 
     public static String objectToJson(Object pojo) throws IOException {
         StringWriter sw = new StringWriter();
-        JsonGenerator jg = jf.createJsonGenerator(sw);
+        JsonGenerator jg = jf.createGenerator(sw);
         m.writeValue(jg, pojo);
         return sw.toString();
     }

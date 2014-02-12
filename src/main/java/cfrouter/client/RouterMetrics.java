@@ -2,9 +2,9 @@ package cfrouter.client;
 
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import cfrouter.client.impl.RouterConfig;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *

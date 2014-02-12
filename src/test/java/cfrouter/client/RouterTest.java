@@ -145,7 +145,7 @@ public class RouterTest {
             assertNotNull("expected register msg to be received", message);
             assertEquals("register msg", r.toJson(), message.getBody());
         }
-        List<Route> activeRoutes = router.getActiveRoutes();
+        List<Route> activeRoutes = router.getActiveRoutes(20, TimeUnit.SECONDS);
         assertTrue("expected to find updated routes ", activeRoutes.containsAll(routes));
     }
 
@@ -165,11 +165,11 @@ public class RouterTest {
             }
 
             //when
-            router.replaceRoutes(updatedRoutes);
+            router.replaceRoutes(updatedRoutes, 20, TimeUnit.SECONDS);
             waitForRegisterMsgNatsSending(updatedRoutes);
 
             //then
-            List<Route> activeRoutes = router.getActiveRoutes();
+            List<Route> activeRoutes = router.getActiveRoutes(20, TimeUnit.SECONDS);
             assertTrue("expected to find updated routes ", activeRoutes.containsAll(updatedRoutes));
             for (Route originalRoute : routes) {
                 assertFalse("expected to not find original routes: " + originalRoute, activeRoutes.contains(originalRoute));
@@ -190,7 +190,7 @@ public class RouterTest {
 
         //then
         assertUnregisterMsgSent(routes);
-        List<Route> activeRoutes = router.getActiveRoutes();
+        List<Route> activeRoutes = router.getActiveRoutes(20, TimeUnit.SECONDS);
         for (Route route : routes) {
             assertFalse("expected to have routes unregistered", activeRoutes.contains(route));
         }
@@ -323,7 +323,7 @@ public class RouterTest {
             routes.add(r1);
 
             //when
-            router.replaceRoutes(routes);
+            router.replaceRoutes(routes, 20, TimeUnit.SECONDS);
 
             //then
             String content = fetchRoutedContentAsString(virtualHost, httpClientConfig);
@@ -381,7 +381,7 @@ public class RouterTest {
 
     @Test
     public void client_exposes_router_metrics_as_beans() throws IOException, InterruptedException {
-        RouterMetrics metrics = router.getRouterMetrics();
+        RouterMetrics metrics = router.getRouterMetrics(20, TimeUnit.SECONDS);
         assertNotNull(metrics);
         assertTrue(metrics.getRequests() > 0);
     }
@@ -389,9 +389,9 @@ public class RouterTest {
     @Ignore("run this manually if you need to clear routes of the router under tests")
     @Test
     public void it_can_clear_all_routes() throws IOException, InterruptedException {
-        List<Route> activeRoutes = router.getActiveRoutes();
+        List<Route> activeRoutes = router.getActiveRoutes(20, TimeUnit.SECONDS);
         router.removeRoutes(activeRoutes);
-        List<Route> routeAfterClear = router.getActiveRoutes();
+        List<Route> routeAfterClear = router.getActiveRoutes(20, TimeUnit.SECONDS);
         assertTrue(routeAfterClear.isEmpty());
     }
 
@@ -404,7 +404,7 @@ public class RouterTest {
         //Wait for the request to be received
         waitForRegisterMsgNatsSending(routes);
 
-        List<Route> activeRoutes = router.getActiveRoutes();
+        List<Route> activeRoutes = router.getActiveRoutes(20, TimeUnit.SECONDS);
         assertTrue("expected to find all registered routes. Expected: \n" + routes + "\nGot: \n" + activeRoutes, activeRoutes.containsAll(routes));
     }
 
